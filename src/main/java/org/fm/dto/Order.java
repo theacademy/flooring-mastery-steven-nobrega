@@ -6,7 +6,6 @@ import java.time.LocalDate;
 public class Order {
 
     private int orderNumber;
-    private LocalDate orderDate;
     private String customerName;
     private TaxInfo taxInfo;
     private Product product;
@@ -33,14 +32,6 @@ public class Order {
 
     public void setOrderNumber(int orderNumber) {
         this.orderNumber = orderNumber;
-    }
-
-    public LocalDate getOrderDate() {
-        return orderDate;
-    }
-
-    public void setOrderDate(LocalDate orderDate) {
-        this.orderDate = orderDate;
     }
 
     public String getCustomerName() {

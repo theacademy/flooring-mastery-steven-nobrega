@@ -5,11 +5,15 @@ import org.fm.dto.Product;
 import org.fm.dto.TaxInfo;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
 import java.util.Arrays;
 import java.util.List;
 
 public class FlooringView {
     private UserIO io;
+    private static final DateTimeFormatter INPUT_FORMAT  = DateTimeFormatter.ofPattern("MM-dd-yyyy");
 
     public FlooringView(UserIO io) {this.io = io;}
 
@@ -160,9 +164,55 @@ public class FlooringView {
                 product.getProductType(), product.getCostPerSquareFoot(), product.getLaborCostPerSquareFoot())));
     }
 
+    public LocalDate getDateInput(String prompt) {
+        while (true) {
+            String input = io.readString(prompt + " (MM-DD-YYYY): ");
+            try {
+                return LocalDate.parse(input.trim(), INPUT_FORMAT);
+            } catch (DateTimeParseException e) {
+                io.print("Invalid date format. Please use MM-DD-YYYY.");
+            }
+        }
+    }
+
+    public LocalDate getFutureDate() {
+        while (true) {
+            LocalDate date = getDateInput("Enter order date");
+            if (date.isAfter(LocalDate.now())) return date;
+            io.print("Order date must be in the future.");
+        }
+    }
+
     public boolean getPlaceOrderConfirmation() {
         String input = io.readString("Place this order? (Y/N): ");
         return input.trim().equalsIgnoreCase("Y");
+    }
+
+    public boolean getSaveEditConfirmation() {
+        String input = io.readString("Save changes? (Y/N): ");
+        return input.trim().equalsIgnoreCase("Y");
+    }
+
+    public int getOrderNumber() {
+        return io.readInt("Enter order number: ");
+    }
+
+    public void displayUnknownCommand() {
+        io.print("Unknown command. Please try again.");
+    }
+
+    public void displayExitBanner() {
+        io.print("Good bye!");
+    }
+
+    public void displayErrorMessage(String message) {
+        io.print("\n=== ERROR ===");
+        io.print(message);
+    }
+
+    public void displaySuccessBanner(String message) {
+        io.print("\n=== SUCCESS ===");
+        io.print(message);
     }
 
     public static void main(String[] args) {
