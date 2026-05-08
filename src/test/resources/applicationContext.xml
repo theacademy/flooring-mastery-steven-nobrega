@@ -16,39 +16,22 @@
           http://www.springframework.org/schema/aop/spring-aop-3.2.xsd">
 
     <!-- Bean definitions go here -->
+    <bean id="orderDaoStub"
+          class="org.fm.dao.OrderDaoStubImpl"/>
 
-    <bean id="orderDao"
-          class="org.fm.dao.OrderDaoFileImpl"/>
-
-    <bean id="productDao"
-          class="org.fm.dao.ProductDaoFileImpl">
-        <constructor-arg value="src/main/resources/Data/Products.txt"/>
+    <bean id="productDaoStub"
+          class="org.fm.dao.ProductDaoStubImpl">
     </bean>
 
-    <bean id="taxInfoDao"
-          class="org.fm.dao.TaxInfoDaoFileImpl">
-        <constructor-arg value="src/main/resources/Data/Taxes.txt"/>
+    <bean id="taxInfoDaoStub"
+          class="org.fm.dao.TaxInfoDaoStubImpl">
     </bean>
 
     <bean id="serviceLayer"
           class="org.fm.service.FlooringServiceLayerImpl">
-        <constructor-arg ref="orderDao"/>
-        <constructor-arg ref="productDao"/>
-        <constructor-arg ref="taxInfoDao"/>
-    </bean>
-
-    <bean id="userIO"
-          class="org.fm.ui.UserIOConsoleImpl"/>
-
-    <bean id="view"
-          class="org.fm.ui.FlooringView">
-        <constructor-arg ref="userIO"/>
-    </bean>
-
-    <bean id="controller"
-          class="org.fm.controller.FlooringController">
-        <constructor-arg ref="serviceLayer"/>
-        <constructor-arg ref="view"/>
+        <constructor-arg ref="orderDaoStub"/>
+        <constructor-arg ref="productDaoStub"/>
+        <constructor-arg ref="taxInfoDaoStub"/>
     </bean>
 
 </beans>

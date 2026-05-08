@@ -1,0 +1,2 @@
+OrderNumber,CustomerName,State,TaxRate,ProductType,Area,CostPerSquareFoot,LaborCostPerSquareFoot,MaterialCost,LaborCost,Tax,Total
+5,mark,WA,9.25,laminate,2020,1.75,2.10,3535.00,4242.00,719.37,8496.37

@@ -93,7 +93,8 @@ public class FlooringView {
                 //Check if area is at least 100 sq ft
                 if (area.compareTo(new BigDecimal("100")) >= 0) {
                     order.setArea(area);
-                    break; }
+                    break;
+                }
                 io.print("Area must be at least 100 sq ft.");
             } catch (NumberFormatException e) {
                 io.print("Please enter a valid number.");
@@ -178,7 +179,8 @@ public class FlooringView {
     public LocalDate getFutureDate() {
         while (true) {
             LocalDate date = getDateInput("Enter order date");
-            if (date.isAfter(LocalDate.now())) return date;
+            if (date.isAfter(LocalDate.now()))
+                return date;
             io.print("Order date must be in the future.");
         }
     }
@@ -190,6 +192,11 @@ public class FlooringView {
 
     public boolean getSaveEditConfirmation() {
         String input = io.readString("Save changes? (Y/N): ");
+        return input.trim().equalsIgnoreCase("Y");
+    }
+
+    public boolean getRemoveConfirmation() {
+        String input = io.readString("Are you sure you want to remove this order? (Y/N): ");
         return input.trim().equalsIgnoreCase("Y");
     }
 
@@ -215,56 +222,7 @@ public class FlooringView {
         io.print(message);
     }
 
-    public static void main(String[] args) {
-        Order o = new Order(1);
-        o.setCustomerName("Doctor Who");
-
-        TaxInfo taxInfo = new TaxInfo();
-        taxInfo.setStateAbbreviation("WA");
-        taxInfo.setStateName("Washington");
-        taxInfo.setTaxRate(new BigDecimal("9.25"));
-
-        o.setTaxInfo(taxInfo);
-
-        Product product = new Product();
-        product.setProductType("Wood");
-        product.setCostPerSquareFoot(new BigDecimal("5.15"));
-        product.setLaborCostPerSquareFoot(new BigDecimal("4.75"));
-
-        o.setProduct(product);
-
-        o.setMaterialCost(new BigDecimal("1251.45"));
-        o.setLaborCost(new BigDecimal("1154.25"));
-        o.setTax(new BigDecimal("216.51"));
-        o.setTotal(new BigDecimal("2622.21"));
-
-        Order o2 = new Order(2);
-        o2.setCustomerName("Doctor Who2");
-
-        TaxInfo taxInfo2 = new TaxInfo();
-        taxInfo2.setStateAbbreviation("WA2");
-        taxInfo2.setStateName("Washington2");
-        taxInfo2.setTaxRate(new BigDecimal("9.252"));
-
-        o2.setTaxInfo(taxInfo);
-
-        Product product2 = new Product();
-        product2.setProductType("Wood2");
-        product2.setCostPerSquareFoot(new BigDecimal("5.152"));
-        product2.setLaborCostPerSquareFoot(new BigDecimal("4.752"));
-
-        o2.setProduct(product2);
-
-        o2.setMaterialCost(new BigDecimal("1251.452"));
-        o2.setLaborCost(new BigDecimal("1154.252"));
-        o2.setTax(new BigDecimal("216.512"));
-        o2.setTotal(new BigDecimal("2622.212"));
-
-        FlooringView fv = new FlooringView(new UserIOConsoleImpl());
-        //Order o3 = fv.getNewOrderInfo(Arrays.asList(product, product2), Arrays.asList(taxInfo, taxInfo2));
-        //fv.displayOrders(Arrays.asList(o,o2,o3));
-
-        fv.displayOrder(o);
-        fv.displayOrder(fv.getEditOrderInfo(o,Arrays.asList(product, product2), Arrays.asList(taxInfo, taxInfo2)));
+    public void displayMessage(String message) {
+        io.print(message);
     }
 }

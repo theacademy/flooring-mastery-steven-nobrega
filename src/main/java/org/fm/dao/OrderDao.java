@@ -15,4 +15,6 @@ public interface OrderDao {
     Order removeOrder(LocalDate date, int orderNumber) throws OrderPersistenceException;
 
     void exportAllData() throws OrderPersistenceException;
+
+    int getMaxOrderNumber() throws OrderPersistenceException;
 }

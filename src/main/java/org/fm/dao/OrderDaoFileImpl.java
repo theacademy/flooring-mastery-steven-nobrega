@@ -16,7 +16,7 @@ public class OrderDaoFileImpl implements OrderDao {
     private static final String EXPORT_FILE = "Backup/DataExport.txt";
     private static final String DELIMITER = ",";
     private static final DateTimeFormatter FILE_DATE_FORMAT = DateTimeFormatter.ofPattern("MMddyyyy");
-    private static final DateTimeFormatter EXPORT_DATE_FORMAT = DateTimeFormatter.ofPattern("MM-dd-yyyy");
+    private static final DateTimeFormatter EXPORTALL_DATE_FORMAT = DateTimeFormatter.ofPattern("MM-dd-yyyy");
 
     //Map containing every order per day
     private Map<String, List<Order>> orders = new HashMap<>();
@@ -78,29 +78,45 @@ public class OrderDaoFileImpl implements OrderDao {
 
     @Override
     public void exportAllData() throws OrderPersistenceException {
+        loadAllOrders();
         new File("Backup").mkdirs();
+
         try (PrintWriter out = new PrintWriter(new FileWriter(EXPORT_FILE))) {
             out.println("OrderNumber,CustomerName,State,TaxRate,ProductType,Area,"
                     + "CostPerSquareFoot,LaborCostPerSquareFoot,MaterialCost,LaborCost,Tax,Total,OrderDate");
 
-            File dir = new File(ORDERS_DIR);
+            for (Map.Entry<String, List<Order>> entry : orders.entrySet()) {
+                LocalDate date = LocalDate.parse(entry.getKey(), FILE_DATE_FORMAT);
+                String exportDateStr = date.format(EXPORTALL_DATE_FORMAT);
 
-            //Put every orders file in an array
-            File[] files = dir.listFiles((file, name) -> name.startsWith("Orders_") && name.endsWith(".txt"));
-            if (files == null)
-                return;
-
-            for (File file : files) {
-                //Take the date from the file name
-                String datePart = file.getName().replace("Orders_", "").replace(".txt", "");
-                LocalDate date = LocalDate.parse(datePart, FILE_DATE_FORMAT);
-                for (Order o : getOrdersByDate(date)) {
-                    //Write orders then the date at the end
-                    out.println(marshallOrder(o) + "," + date.format(EXPORT_DATE_FORMAT));
+                for (Order o : entry.getValue()) {
+                    out.println(marshallOrder(o) + "," + exportDateStr);
                 }
             }
         } catch (IOException e) {
             throw new OrderPersistenceException("Could not export data.", e);
+        }
+    }
+
+    @Override
+    public int getMaxOrderNumber() throws OrderPersistenceException {
+        loadAllOrders();
+        return orders.values().stream()
+                .flatMap(List::stream) // puts all lists in a single list
+                .mapToInt(Order::getOrderNumber) // convert to a list with only the order numbers
+                .max()
+                .orElse(0);
+    }
+
+    private void loadAllOrders() throws OrderPersistenceException {
+        File dir = new File(ORDERS_DIR);
+        File[] files = dir.listFiles((d, name) -> name.startsWith("Orders_") && name.endsWith(".txt"));
+        if (files == null) return;
+
+        for (File file : files) {
+            String datePart = file.getName().replace("Orders_", "").replace(".txt", "");
+            LocalDate date = LocalDate.parse(datePart, FILE_DATE_FORMAT);
+            loadOrdersForDate(date); // populates the orders map for each order file
         }
     }
 
@@ -185,41 +201,4 @@ public class OrderDaoFileImpl implements OrderDao {
                 + o.getMaterialCost() + DELIMITER + o.getLaborCost() + DELIMITER
                 + o.getTax() + DELIMITER + o.getTotal();
     }
-
-    public static void main(String[] args) throws OrderPersistenceException {
-        OrderDao od = new OrderDaoFileImpl();
-        Order o = new Order(1);
-        o.setCustomerName("Test add");
-
-        TaxInfo taxInfo = new TaxInfo();
-        taxInfo.setStateAbbreviation("WA");
-        taxInfo.setStateName("Washington");
-        taxInfo.setTaxRate(new BigDecimal("12.25"));
-
-        o.setTaxInfo(taxInfo);
-
-        Product product = new Product();
-        product.setProductType("TestWood");
-        product.setCostPerSquareFoot(new BigDecimal("10.15"));
-        product.setLaborCostPerSquareFoot(new BigDecimal("10.75"));
-
-        o.setProduct(product);
-
-        o.setArea(new BigDecimal("125"));
-        o.setMaterialCost(new BigDecimal("1251.45"));
-        o.setLaborCost(new BigDecimal("1154.25"));
-        o.setTax(new BigDecimal("216.51"));
-        o.setTotal(new BigDecimal("2622.21"));
-
-        od.addOrder(LocalDate.parse("06022013", FILE_DATE_FORMAT), o);
-        o.setCustomerName("Test add23223");
-
-        List<Order> orders = od.getOrdersByDate(LocalDate.parse("06022013", FILE_DATE_FORMAT));
-        od.editOrder(LocalDate.parse("06022013", FILE_DATE_FORMAT), o);
-        //od.removeOrder(LocalDate.parse("06022013", FILE_DATE_FORMAT), 1);
-        od.exportAllData();
-        System.out.println(orders);
-    }
-
-
 }

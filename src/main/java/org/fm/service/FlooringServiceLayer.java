@@ -9,18 +9,22 @@ import java.time.LocalDate;
 import java.util.List;
 
 public interface FlooringServiceLayer {
-    List<Order> getOrdersByDate(LocalDate date) throws OrderPersistenceException;
+    List<Order> getOrdersByDate(LocalDate date) throws OrderPersistenceException, NoOrdersOnDateException;
 
     Order addOrder(LocalDate date, Order order) throws
             OrderPersistenceException,
-            OrderDuplicateIdException,
+            NoOrdersOnDateException,
             OrderDataValidationException;
 
     Order editOrder(LocalDate date, Order order) throws
             OrderPersistenceException,
+            NoOrdersOnDateException,
             OrderDataValidationException;
 
-    Order removeOrder(LocalDate date, int orderNumber) throws OrderPersistenceException;
+    Order removeOrder(LocalDate date, int orderNumber) throws
+            OrderPersistenceException,
+            NoOrdersOnDateException,
+            OrderDataValidationException;
 
     void exportAllData() throws OrderPersistenceException;
 
@@ -30,7 +34,7 @@ public interface FlooringServiceLayer {
     List<TaxInfo> getAllTaxes()
             throws OrderPersistenceException;
 
-    Order calculateOrder(Order order) throws OrderPersistenceException;
+    Order calculateOrder(Order order) throws OrderPersistenceException, OrderDataValidationException;
 
-    int getNextOrderNumber(LocalDate date) throws OrderPersistenceException;
+    int getNextOrderNumber() throws OrderPersistenceException;
 }

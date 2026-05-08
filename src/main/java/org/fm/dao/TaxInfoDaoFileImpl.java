@@ -33,10 +33,4 @@ public class TaxInfoDaoFileImpl implements TaxInfoDao {
         }
         return taxes;
     }
-
-    public static void main(String[] args) throws OrderPersistenceException{
-        TaxInfoDao t = new TaxInfoDaoFileImpl("src/main/resources/Data/Taxes.txt");
-        List<TaxInfo> taxes = t.getAllTaxes();
-        System.out.println(taxes);
-    }
 }

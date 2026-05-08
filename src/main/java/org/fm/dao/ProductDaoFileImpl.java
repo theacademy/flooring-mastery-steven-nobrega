@@ -35,11 +35,4 @@ public class ProductDaoFileImpl implements ProductDao {
         }
         return products;
     }
-
-    public static void main(String[] args) throws OrderPersistenceException {
-        ProductDao p = new ProductDaoFileImpl("src/main/resources/Data/Products.txt");
-        List<Product> products = p.getAllProducts();
-        System.out.println(products);
-        System.out.println();
-    }
 }
