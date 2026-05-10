@@ -93,6 +93,7 @@ public class OrderDaoFileImplTest {
         testOrderDao.addOrder(LocalDate.of(2026, 9, 15), buildTestOrder(testOrderDao.getMaxOrderNumber()));
 
         int max = testOrderDao.getMaxOrderNumber();
+        // Assert needs to be modified if more orders are added.
         assertEquals(6, max);
 
         // clean up second test file
